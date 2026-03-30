@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>gstack Cheat Sheet — Product Owner Edition</title>
+<style>
+  @page { size: A4 landscape; margin: 6mm; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+    font-size: 6.8pt;
+    line-height: 1.3;
+    color: #1e1e2e;
+    background: #fff;
+    width: 297mm;
+    height: 210mm;
+    padding: 5mm 6mm;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  code, .mono { font-family: 'SF Mono', 'Cascadia Code', Consolas, monospace; font-size: 6.2pt; }
+  .header {
+    display: flex; align-items: baseline; gap: 8px;
+    border-bottom: 2.5px solid #8b5cf6; padding-bottom: 3px; margin-bottom: 4px; flex-shrink: 0;
+  }
+  .header h1 { font-size: 13pt; font-weight: 800; color: #8b5cf6; letter-spacing: -0.5px; }
+  .header .sub { font-size: 7.5pt; color: #64748b; font-weight: 500; }
+  .header .pipe { font-size: 7pt; color: #ddd6fe; margin: 0 2px; }
+  .cols {
+    display: grid; grid-template-columns: 1.05fr 1fr 0.95fr;
+    gap: 8px; flex: 1; min-height: 0; overflow: hidden;
+  }
+  .col { display: flex; flex-direction: column; gap: 3px; overflow: hidden; }
+  .stitle {
+    font-size: 7pt; font-weight: 700; color: #fff; background: #8b5cf6;
+    padding: 1.5px 5px; border-radius: 2px; flex-shrink: 0; letter-spacing: 0.2px;
+  }
+  .stitle-sm {
+    font-size: 6.8pt; font-weight: 700; color: #7c3aed;
+    border-bottom: 1px solid #ede9fe; padding-bottom: 1px; margin-top: 2px; flex-shrink: 0;
+  }
+  .stitle-xs {
+    font-size: 6.5pt; font-weight: 700; color: #6d28d9; margin-top: 1px; flex-shrink: 0;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 6.3pt; }
+  th {
+    background: #f5f3ff; color: #6d28d9; font-weight: 700; text-align: left;
+    padding: 1.5px 3px; font-size: 5.8pt; text-transform: uppercase; letter-spacing: 0.3px;
+  }
+  td { padding: 1.3px 3px; border-bottom: 0.5px solid #f0f0f5; vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  .sk { font-family: 'SF Mono', Consolas, monospace; font-weight: 600; color: #7c3aed; font-size: 6pt; white-space: nowrap; }
+  .tag {
+    display: inline-block; padding: 0 2.5px; border-radius: 2px;
+    font-size: 5.5pt; font-weight: 600; white-space: nowrap;
+  }
+  .tag-core { background: #fef3c7; color: #92400e; }
+  .tag-design { background: #fce7f3; color: #9d174d; }
+  .tag-qa { background: #d1fae5; color: #065f46; }
+  .tag-ship { background: #dbeafe; color: #1e40af; }
+  .tag-browse { background: #ede9fe; color: #5b21b6; }
+  .tag-ops { background: #f3e8ff; color: #6b21a8; }
+  .tag-safe { background: #fee2e2; color: #991b1b; }
+  .star { color: #f59e0b; font-size: 7pt; }
+  .relevance {
+    display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 1px; vertical-align: middle;
+  }
+  .rel-high { background: #8b5cf6; }
+  .rel-mid { background: #c4b5fd; }
+  .rel-low { background: #e9e5f5; }
+  .cmd-cat { font-size: 6.3pt; font-weight: 700; color: #6d28d9; margin-top: 2px; margin-bottom: 0.5px; }
+  .cmd-line {
+    font-family: 'SF Mono', Consolas, monospace; font-size: 5.8pt;
+    color: #334155; padding: 0.3px 0; line-height: 1.25;
+  }
+  .cmd-line b { color: #7c3aed; font-weight: 700; }
+  .pattern-code {
+    font-family: 'SF Mono', Consolas, monospace; font-size: 5.8pt;
+    background: #faf5ff; border: 0.5px solid #ede9fe; border-radius: 2px;
+    padding: 1.5px 3px; color: #475569; line-height: 1.3;
+  }
+  .callout {
+    background: #f5f3ff; border-left: 2.5px solid #8b5cf6; border-radius: 0 2px 2px 0;
+    padding: 2.5px 5px; font-size: 6.3pt; line-height: 1.35; color: #4c1d95;
+  }
+  .callout b { color: #6d28d9; }
+  .gotcha {
+    background: #fffbeb; border: 0.5px solid #fde68a; border-radius: 2px;
+    padding: 2px 4px; font-size: 5.8pt; line-height: 1.3; color: #92400e;
+  }
+  .gotcha b { color: #b45309; }
+  .env-box {
+    background: #f1f5f9; border-radius: 2px; padding: 1.5px 4px;
+    font-family: 'SF Mono', Consolas, monospace; font-size: 5.8pt; color: #475569;
+  }
+  .workflow-box {
+    background: #faf5ff; border: 0.5px solid #ddd6fe; border-radius: 3px;
+    padding: 3px 5px; font-size: 6.3pt; line-height: 1.4;
+  }
+  .workflow-box .step { color: #7c3aed; font-weight: 700; }
+  .divider { border-top: 0.5px solid #ede9fe; margin: 2px 0; }
+  .footer {
+    border-top: 1px solid #cbd5e1; padding-top: 2px; margin-top: 3px;
+    text-align: center; font-size: 6pt; color: #94a3b8; flex-shrink: 0;
+  }
+  .footer a { color: #8b5cf6; text-decoration: none; }
+  @media print {
+    body { width: auto; height: auto; padding: 5mm 6mm; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>gstack Cheat Sheet</h1>
+  <span class="sub">v0.3.1 — OS for Claude Code</span>
+  <span class="pipe">|</span>
+  <span class="sub">31 skills · Think → Plan → Build → Review → Test → Ship → Reflect</span>
+  <span style="margin-left:auto; font-size:6.5pt; color:#8b5cf6; font-weight:600;">Product Owner Edition</span>
+</div>
+
+<div class="cols">
+
+<!-- ═══════════ COLONNE 1 : SKILLS PAR PERTINENCE PRODUIT ═══════════ -->
+<div class="col">
+  <div class="stitle">Skills — Triées par impact Product</div>
+
+  <div class="stitle-xs"><span class="relevance rel-high"></span><span class="relevance rel-high"></span><span class="relevance rel-high"></span> INDISPENSABLES AU QUOTIDIEN</div>
+  <table>
+    <tr><td class="sk">/office-hours</td><td><span class="tag tag-core">Produit</span></td><td>Diagnostic YC : 6 forcing questions, design doc, définir le "vrai" problème</td></tr>
+    <tr><td class="sk">/plan-ceo-review</td><td><span class="tag tag-core">Vision</span></td><td>Challenger chaque feature : c'est quoi le produit 10★ ? Expand ou reduce scope</td></tr>
+    <tr><td class="sk">/plan-design-review</td><td><span class="tag tag-design">Design</span></td><td>Audit UX en 7 passes : IA, interactions, user journey, AI slop, responsive, a11y</td></tr>
+    <tr><td class="sk">/autoplan</td><td><span class="tag tag-core">Pipeline</span></td><td>Enchaîne CEO → Design → Eng review automatiquement</td></tr>
+    <tr><td class="sk">/browse</td><td><span class="tag tag-browse">Browser</span></td><td>Naviguer, tester, vérifier le produit en live — screenshots evidence</td></tr>
+    <tr><td class="sk">/qa</td><td><span class="tag tag-qa">QA</span></td><td>Tester le produit : quick (smoke) / standard / exhaustive + score santé</td></tr>
+    <tr><td class="sk">/retro</td><td><span class="tag tag-ops">Équipe</span></td><td>Rétro hebdo : métriques, commits, LOC, feedback par personne</td></tr>
+  </table>
+
+  <div class="stitle-xs" style="margin-top:2px;"><span class="relevance rel-high"></span><span class="relevance rel-high"></span><span class="relevance rel-mid"></span> DESIGN & PROTOTYPAGE</div>
+  <table>
+    <tr><td class="sk">/design-consultation</td><td><span class="tag tag-design">Sys</span></td><td>Créer un design system complet : typo, couleurs, grid → DESIGN.md</td></tr>
+    <tr><td class="sk">/design-shotgun</td><td><span class="tag tag-design">Explorer</span></td><td>Générer N variantes visuelles côte à côte, tracker les préférences</td></tr>
+    <tr><td class="sk">/design-html</td><td><span class="tag tag-design">Proto</span></td><td>Mockup → HTML interactif en live reload (30KB, 0 deps)</td></tr>
+    <tr><td class="sk">/design-review</td><td><span class="tag tag-design">Audit</span></td><td>Audit design + auto-fix + commits atomiques + screenshots before/after</td></tr>
+  </table>
+
+  <div class="stitle-xs" style="margin-top:2px;"><span class="relevance rel-high"></span><span class="relevance rel-mid"></span><span class="relevance rel-mid"></span> QUALITÉ & SÉCURITÉ</div>
+  <table>
+    <tr><td class="sk">/qa-only</td><td><span class="tag tag-qa">Report</span></td><td>Audit QA sans toucher au code — rapport de bugs uniquement</td></tr>
+    <tr><td class="sk">/benchmark</td><td><span class="tag tag-qa">Perf</span></td><td>Core Web Vitals, budget perf, avant/après chaque PR</td></tr>
+    <tr><td class="sk">/cso</td><td><span class="tag tag-qa">Sécu</span></td><td>OWASP Top 10 + STRIDE, audit 14 phases, 0-bruit</td></tr>
+    <tr><td class="sk">/canary</td><td><span class="tag tag-ship">SRE</span></td><td>Monitoring post-deploy : screenshots, console errors, perf</td></tr>
+  </table>
+
+  <div class="stitle-xs" style="margin-top:2px;"><span class="relevance rel-mid"></span><span class="relevance rel-mid"></span><span class="relevance rel-low"></span> DELIVERY (PILOTÉ PAR L'ÉQUIPE)</div>
+  <table>
+    <tr><td class="sk">/plan-eng-review</td><td><span class="tag tag-ship">Archi</span></td><td>Verrouiller archi, diagrammes, edge cases, tests</td></tr>
+    <tr><td class="sk">/review</td><td><span class="tag tag-ship">PR</span></td><td>Code review staff : N+1, races, trust boundaries, scope drift</td></tr>
+    <tr><td class="sk">/ship</td><td><span class="tag tag-ship">Release</span></td><td>sync → test → review → bump → commit → push → PR</td></tr>
+    <tr><td class="sk">/land-and-deploy</td><td><span class="tag tag-ship">Deploy</span></td><td>Merge → CI → deploy → canary (Fly/Vercel/Netlify…)</td></tr>
+    <tr><td class="sk">/document-release</td><td><span class="tag tag-ship">Docs</span></td><td>MAJ auto README / CHANGELOG / CONTRIBUTING</td></tr>
+    <tr><td class="sk">/investigate</td><td><span class="tag tag-ship">Debug</span></td><td>Root cause analysis, 5 phases, scope lock</td></tr>
+  </table>
+
+  <div class="stitle-xs" style="margin-top:2px;"><span class="relevance rel-mid"></span><span class="relevance rel-low"></span><span class="relevance rel-low"></span> UTILITAIRES</div>
+  <table>
+    <tr><td class="sk">/connect-chrome</td><td><span class="tag tag-browse">Chrome</span></td><td>Piloter votre Chrome réel + Side Panel</td></tr>
+    <tr><td class="sk">/setup-browser-cookies</td><td><span class="tag tag-browse">Cookies</span></td><td>Import sessions Chrome/Arc/Brave/Edge</td></tr>
+    <tr><td class="sk">/guard</td><td><span class="tag tag-safe">Safety</span></td><td>/careful + /freeze — mode prod sécurisé</td></tr>
+    <tr><td class="sk">/learn</td><td><span class="tag tag-ops">Mémoire</span></td><td>Patterns cross-sessions searchable</td></tr>
+    <tr><td class="sk">/codex</td><td><span class="tag tag-ops">2nd avis</span></td><td>Review croisé via OpenAI Codex</td></tr>
+  </table>
+</div>
+
+<!-- ═══════════ COLONNE 2 : CE QUE LE PO FAIT AVEC BROWSE ═══════════ -->
+<div class="col">
+  <div class="stitle">Browse pour le Product Owner</div>
+
+  <div class="callout">
+    <b>Superpouvoir PO :</b> vérifier le produit, capturer des preuves visuelles, tester des flows utilisateurs — sans quitter le terminal ni demander à un dev.
+  </div>
+
+  <div class="cmd-cat">Vérifier une page</div>
+  <div class="cmd-line"><b>goto</b> &lt;url&gt; — naviguer vers une page</div>
+  <div class="cmd-line"><b>text</b> — lire le contenu texte nettoyé</div>
+  <div class="cmd-line"><b>links</b> — lister tous les liens (broken links?)</div>
+  <div class="cmd-line"><b>screenshot</b> [path] — capturer la page entière</div>
+  <div class="cmd-line"><b>screenshot</b> --viewport [path] — capturer le viewport only</div>
+  <div class="cmd-line"><b>screenshot</b> "#selector" [path] — capturer un composant</div>
+
+  <div class="cmd-cat">Tester un flow utilisateur</div>
+  <div class="cmd-line"><b>snapshot -i</b> — lister tous les éléments interactifs (@e1, @e2…)</div>
+  <div class="cmd-line"><b>click</b> @e3 — cliquer un bouton/lien par ref</div>
+  <div class="cmd-line"><b>fill</b> @e5 "valeur" — remplir un champ</div>
+  <div class="cmd-line"><b>select</b> @e7 "option" — choisir dans un dropdown</div>
+  <div class="cmd-line"><b>press</b> Enter — simuler une touche</div>
+  <div class="cmd-line"><b>scroll</b> down [5] — scroller la page</div>
+  <div class="cmd-line"><b>wait</b> ".spinner" — attendre qu'un élément apparaisse</div>
+
+  <div class="cmd-cat">Vérifier la qualité</div>
+  <div class="cmd-line"><b>console</b> --errors — erreurs JS visibles par l'utilisateur ?</div>
+  <div class="cmd-line"><b>is</b> visible ".success-msg" — un élément est-il affiché ?</div>
+  <div class="cmd-line"><b>is</b> enabled "#submit-btn" — le bouton est-il actif ?</div>
+  <div class="cmd-line"><b>perf</b> — métriques de performance de la page</div>
+  <div class="cmd-line"><b>forms</b> — structure JSON de tous les formulaires</div>
+  <div class="cmd-line"><b>accessibility</b> — arbre ARIA (audit a11y rapide)</div>
+
+  <div class="cmd-cat">Comparer & Responsive</div>
+  <div class="cmd-line"><b>responsive</b> [prefix] — 3 screenshots : mobile / tablet / desktop</div>
+  <div class="cmd-line"><b>diff</b> &lt;staging&gt; &lt;prod&gt; — diff texte entre environnements</div>
+  <div class="cmd-line"><b>viewport</b> 375 812 — simuler iPhone · <b>viewport</b> 1440 900 — desktop</div>
+
+  <div class="cmd-cat">Onglets & Navigation</div>
+  <div class="cmd-line"><b>back</b> · <b>forward</b> · <b>reload</b> · <b>url</b></div>
+  <div class="cmd-line"><b>tabs</b> · <b>tab</b> &lt;idx&gt; · <b>newtab</b> · <b>closetab</b> &lt;idx&gt;</div>
+
+  <div class="divider"></div>
+
+  <div class="stitle">Snapshot — Le système de refs</div>
+  <div style="font-size: 6pt; color: #475569; line-height: 1.35; margin-top:1px;">
+    <code><b>snapshot -i</b></code> parse l'accessibility tree et assigne des <b>refs</b> (<code>@e1</code>, <code>@e2</code>…) à chaque élément interactif. Plus besoin de connaître les sélecteurs CSS.
+  </div>
+  <table style="margin-top:1px;">
+    <tr><th>Flag</th><th>Quand l'utiliser</th></tr>
+    <tr><td style="font-family:monospace; color:#7c3aed; font-weight:700;">-i</td><td>Lister boutons, liens, inputs → le plus utilisé</td></tr>
+    <tr><td style="font-family:monospace; color:#7c3aed; font-weight:700;">-a</td><td>Screenshot annotée avec labels sur chaque élément</td></tr>
+    <tr><td style="font-family:monospace; color:#7c3aed; font-weight:700;">-D</td><td>Voir ce qui a changé depuis le dernier snapshot</td></tr>
+    <tr><td style="font-family:monospace; color:#7c3aed; font-weight:700;">-s sel</td><td>Zoomer sur une section (ex: <code>-s ".sidebar"</code>)</td></tr>
+    <tr><td style="font-family:monospace; color:#7c3aed; font-weight:700;">-c</td><td>Vue compacte, masquer les éléments vides</td></tr>
+    <tr><td style="font-family:monospace; color:#7c3aed; font-weight:700;">-o path</td><td>Sauvegarder screenshot annotée sur disque</td></tr>
+  </table>
+</div>
+
+<!-- ═══════════ COLONNE 3 : WORKFLOWS PO ═══════════ -->
+<div class="col">
+  <div class="stitle">Workflows Product Owner</div>
+
+  <div class="stitle-xs">1. Cadrer une feature (avant le dev)</div>
+  <div class="workflow-box">
+    <span class="step">/office-hours</span> → Diagnostic produit, 6 questions<br>
+    <span class="step">/plan-ceo-review</span> → Challenger le scope, trouver le 10★<br>
+    <span class="step">/plan-design-review</span> → Valider l'UX en 7 passes<br>
+    <span style="color:#94a3b8; font-style:italic;">ou en 1 commande :</span> <span class="step">/autoplan</span>
+  </div>
+
+  <div class="stitle-xs" style="margin-top:3px;">2. Prototyper & itérer</div>
+  <div class="workflow-box">
+    <span class="step">/design-consultation</span> → Design system<br>
+    <span class="step">/design-shotgun</span> → Explorer N variantes visuelles<br>
+    <span class="step">/design-html</span> → Prototype HTML interactif, live reload<br>
+    <span class="step">/browse</span> → Vérifier le proto dans le navigateur
+  </div>
+
+  <div class="stitle-xs" style="margin-top:3px;">3. Valider avant release</div>
+  <div class="workflow-box">
+    <span class="step">/qa</span> → Test exhaustif + score santé (visual, UX, a11y, perf)<br>
+    <span class="step">/benchmark</span> → Core Web Vitals avant/après<br>
+    <span class="step">/browse</span> → <code>responsive /tmp/check</code> → vérifier 3 breakpoints<br>
+    <span class="step">/cso</span> → Audit sécu avant mise en prod
+  </div>
+
+  <div class="stitle-xs" style="margin-top:3px;">4. Après le deploy</div>
+  <div class="workflow-box">
+    <span class="step">/canary</span> → Monitoring visuel + console + perf<br>
+    <span class="step">/browse</span> → <code>diff staging prod</code> → vérifier la parité<br>
+    <span class="step">/retro</span> → Rétro hebdo, métriques par personne
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="stitle-sm">Scénarios Browse fréquents (PO)</div>
+  <table style="font-size: 5.8pt;">
+    <tr><th>Objectif</th><th>Commandes</th></tr>
+    <tr><td>Vérifier un fix</td><td><code>goto URL → screenshot → console --errors</code></td></tr>
+    <tr><td>Tester un signup</td><td><code>goto /signup → snapshot -i → fill @e3 … → click @e5 → snapshot -D</code></td></tr>
+    <tr><td>Bug report visuel</td><td><code>snapshot -i -a -o /tmp/bug.png → console --errors</code></td></tr>
+    <tr><td>Check responsive</td><td><code>responsive /tmp/responsive → 3 screenshots auto</code></td></tr>
+    <tr><td>Comparer staging/prod</td><td><code>diff https://staging.app https://app.com</code></td></tr>
+    <tr><td>Vérifier un CTA</td><td><code>is visible ".cta-button" → is enabled ".cta-button"</code></td></tr>
+    <tr><td>Audit liens cassés</td><td><code>links → vérifier les 404</code></td></tr>
+  </table>
+
+  <div class="divider"></div>
+
+  <div class="gotcha">
+    <div style="font-weight:700; font-size:6.5pt; color:#b45309; margin-bottom:1px;">⚠ À retenir</div>
+    <b>•</b> <code>snapshot -i</code> en premier — ne jamais deviner les sélecteurs<br>
+    <b>•</b> Refs invalidées après navigation → refaire snapshot<br>
+    <b>•</b> <code>/qa</code> quick = smoke test rapide, exhaustive = audit complet<br>
+    <b>•</b> <code>/office-hours</code> a 2 modes : Startup (interrogation) vs Builder (brainstorm)<br>
+    <b>•</b> <code>/autoplan</code> montre le ratio temps humain vs Claude+gstack<br>
+    <b>•</b> Auto-shutdown navigateur après 30min d'inactivité
+  </div>
+
+  <div style="margin-top:auto;">
+    <div class="stitle-sm">Install (30 sec)</div>
+    <div class="env-box">git clone --depth 1 github.com/garrytan/gstack \
+  ~/.claude/skills/gstack
+cd ~/.claude/skills/gstack && ./setup</div>
+    <div style="font-size: 5.8pt; color: #64748b; margin-top: 2px; line-height:1.3;">
+      Supporte : Claude Code · Codex · Cursor · Gemini CLI · Factory Droid<br>
+      <code>./setup --no-prefix</code> pour des commandes courtes (<code>/qa</code> au lieu de <code>/gstack-qa</code>)
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="footer">
+  gstack v0.3.1 &nbsp;•&nbsp; <a href="https://github.com/garrytan/gstack">github.com/garrytan/gstack</a> &nbsp;•&nbsp; 31 skills &nbsp;•&nbsp; MIT License &nbsp;•&nbsp; 30 mars 2026
+</div>
+
+</body>
+</html>
